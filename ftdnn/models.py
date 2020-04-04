@@ -190,6 +190,30 @@ class DenseReLU(nn.Module):
         return x
 
 
+class DenseSoftmax(nn.Module):
+
+    def __init__(self, in_dim, out_dim):
+        super().__init__()
+        self.fc = nn.Linear(in_dim, out_dim)
+        self.nl = nn.Softmax()
+
+    def forward(self, x):
+        x = self.fc(x)
+        x = self.nl(x)
+        return x
+
+class DenseSigmoid(nn.Module):
+
+    def __init__(self, in_dim, out_dim):
+        super().__init__()
+        self.fc = nn.Linear(in_dim, out_dim)
+        self.nl = nn.Sigmoid()
+
+    def forward(self, x):
+        x = self.fc(x)
+        x = self.nl(x)
+        return x
+
 class StatsPool(nn.Module):
 
     def __init__(self, floor=1e-10, bessel=False):
@@ -209,7 +233,7 @@ class StatsPool(nn.Module):
         return x
 
 
-class TDNN(nn.Module):
+class TDNNLayer(nn.Module):
 
     def __init__(
         self,
@@ -222,7 +246,7 @@ class TDNN(nn.Module):
         dropout_p=0.0,
         padding=0
     ):
-        super(TDNN, self).__init__()
+        super(TDNNLayer, self).__init__()
         self.context_size = context_size
         self.stride = stride
         self.input_dim = input_dim
@@ -274,7 +298,7 @@ class FTDNN(nn.Module):
         '''
         super(FTDNN, self).__init__()
 
-        self.layer01 = TDNN(input_dim=in_dim, output_dim=512,
+        self.layer01 = TDNNLayer(input_dim=in_dim, output_dim=512,
                             context_size=5, padding=2)
         self.layer02 = FTDNNLayer(512, 1024, 256, context_size=2, dilations=[
                                   2, 2, 2], paddings=[1, 1, 1])

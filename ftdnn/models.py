@@ -202,6 +202,17 @@ class DenseSoftmax(nn.Module):
         x = self.nl(x)
         return x
 
+
+class DenseLogits(nn.Module):
+
+    def __init__(self, in_dim, out_dim):
+        super().__init__()
+        self.fc = nn.Linear(in_dim, out_dim)
+
+    def forward(self, x):
+        x = self.fc(x)
+        return x
+
 class DenseSigmoid(nn.Module):
 
     def __init__(self, in_dim, out_dim):

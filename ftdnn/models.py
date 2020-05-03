@@ -195,7 +195,7 @@ class DenseSoftmax(nn.Module):
     def __init__(self, in_dim, out_dim):
         super().__init__()
         self.fc = nn.Linear(in_dim, out_dim)
-        self.nl = nn.Softmax()
+        self.nl = nn.Softmax(dim=1)
 
     def forward(self, x):
         x = self.fc(x)
@@ -371,3 +371,30 @@ class FTDNN(nn.Module):
                 if isinstance(layer, FTDNNLayer):
                     errors += layer.orth_error()
         return errors
+
+
+class TDNN(nn.Module):
+
+    def __init__(self,  in_dim=30):
+        super(TDNN, self).__init__()
+        self.frame1 = TDNNLayer(input_dim=in_dim, output_dim=512, context_size=5, dilation=1)
+        self.frame2 = TDNNLayer(input_dim=512, output_dim=512, context_size=3, dilation=2)
+        self.frame3 = TDNNLayer(input_dim=512, output_dim=512, context_size=3, dilation=3)
+        self.frame4 = TDNNLayer(input_dim=512, output_dim=512, context_size=1, dilation=1)
+        self.frame5 = TDNNLayer(input_dim=512, output_dim=1500, context_size=1, dilation=1)
+        self.frame6 = StatsPool()
+        self.frame7 = DenseReLU(3000, 512)
+
+
+    def forward(self, x):
+        '''
+        Input must be (batch_size, seq_len, in_dim)
+        '''
+        x = self.frame1(x)
+        x_2 = self.frame2(x)
+        x_3 = self.frame3(x_2)
+        x_4 = self.frame4(x_3)
+        x_5 = self.frame5(x_4)
+        x_6 = self.frame6(x_5)
+        x_7 = self.frame7(x_6)
+        return x_7

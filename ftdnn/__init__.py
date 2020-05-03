@@ -1,8 +1,9 @@
-from .models import FTDNN, DenseReLU, DenseSigmoid, DenseSoftmax
+from .models import FTDNN, TDNN, DenseReLU, DenseSigmoid, DenseSoftmax
 
 __all__ = [
     'FTDNN', 
     'DenseReLU', 
     'DenseSigmoid', 
-    'DenseSoftmax'
+    'DenseSoftmax',
+    'TDNN'
 ]

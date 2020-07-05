@@ -1,4 +1,4 @@
-from .models import FTDNN, TDNN, DenseReLU, DenseSigmoid, DenseSoftmax, DenseLogits
+from .models import FTDNN, TDNN, DenseReLU, DenseSigmoid, DenseSoftmax, TDNNAgePaper, DenseLogits
 
 __all__ = [
     'FTDNN', 
@@ -6,5 +6,6 @@ __all__ = [
     'DenseSigmoid', 
     'DenseSoftmax',
     'TDNN',
+    'TDNNAgePaper',
     'DenseLogits'
 ]

@@ -373,17 +373,43 @@ class FTDNN(nn.Module):
         return errors
 
 
+# class TDNN(nn.Module):
+
+#     def __init__(self,  in_dim=30):
+#         super(TDNN, self).__init__()
+#         self.frame1 = TDNNLayer(input_dim=in_dim, output_dim=512, context_size=5, dilation=1)
+#         self.frame2 = TDNNLayer(input_dim=512, output_dim=512, context_size=3, dilation=2)
+#         self.frame3 = TDNNLayer(input_dim=512, output_dim=512, context_size=3, dilation=3)
+#         self.frame4 = TDNNLayer(input_dim=512, output_dim=512, context_size=1, dilation=1)
+#         self.frame5 = TDNNLayer(input_dim=512, output_dim=1500, context_size=1, dilation=1)
+#         self.frame6 = StatsPool()
+#         self.frame7 = DenseReLU(3000, 512)
+
+
+#     def forward(self, x):
+#         '''
+#         Input must be (batch_size, seq_len, in_dim)
+#         '''
+#         x = self.frame1(x)
+#         x_2 = self.frame2(x)
+#         x_3 = self.frame3(x_2)
+#         x_4 = self.frame4(x_3)
+#         x_5 = self.frame5(x_4)
+#         x_6 = self.frame6(x_5)
+#         x_7 = self.frame7(x_6)
+#         return x_7
+
 class TDNN(nn.Module):
 
-    def __init__(self,  in_dim=30):
+    def __init__(self,  in_dim=23, layer_size=512, dropout=0.0):
         super(TDNN, self).__init__()
-        self.frame1 = TDNNLayer(input_dim=in_dim, output_dim=512, context_size=5, dilation=1)
-        self.frame2 = TDNNLayer(input_dim=512, output_dim=512, context_size=3, dilation=2)
-        self.frame3 = TDNNLayer(input_dim=512, output_dim=512, context_size=3, dilation=3)
-        self.frame4 = TDNNLayer(input_dim=512, output_dim=512, context_size=1, dilation=1)
-        self.frame5 = TDNNLayer(input_dim=512, output_dim=1500, context_size=1, dilation=1)
+        self.frame1 = TDNNLayer(input_dim=in_dim, output_dim=layer_size, context_size=5, dilation=1, dropout_p=dropout)
+        self.frame2 = TDNNLayer(input_dim=layer_size, output_dim=layer_size, context_size=3, dilation=2, dropout_p=dropout)
+        self.frame3 = TDNNLayer(input_dim=layer_size, output_dim=layer_size, context_size=3, dilation=3, dropout_p=dropout)
+        self.frame4 = TDNNLayer(input_dim=layer_size, output_dim=layer_size, context_size=1, dilation=1, dropout_p=dropout)
+        self.frame5 = TDNNLayer(input_dim=layer_size, output_dim=1500, context_size=1, dilation=1, dropout_p=dropout)
         self.frame6 = StatsPool()
-        self.frame7 = DenseReLU(3000, 512)
+        self.frame7 = DenseReLU(3000, layer_size)
 
 
     def forward(self, x):
@@ -398,3 +424,27 @@ class TDNN(nn.Module):
         x_6 = self.frame6(x_5)
         x_7 = self.frame7(x_6)
         return x_7
+
+class TDNNAgePaper(nn.Module):
+
+    def __init__(self,  in_dim=23, layer_size=512, dropout=0.0):
+        super(TDNNAgePaper, self).__init__()
+        self.frame1 = TDNNLayer(input_dim=in_dim, output_dim=layer_size, context_size=1, stride=1, dilation=1, dropout_p=dropout)
+        self.frame2 = TDNNLayer(input_dim=layer_size, output_dim=layer_size, context_size=5, stride=1, dilation=1, dropout_p=dropout)
+        self.frame3 = TDNNLayer(input_dim=layer_size, output_dim=layer_size, context_size=7, stride=1, dilation=1, dropout_p=dropout)
+        self.frame4 = TDNNLayer(input_dim=layer_size, output_dim=1500, context_size=1, stride=1, dilation=1, dropout_p=dropout)
+        self.frame6 = StatsPool()
+        self.frame7 = DenseReLU(3000, layer_size)
+
+
+    def forward(self, x):
+        '''
+        Input must be (batch_size, seq_len, in_dim)
+        '''
+        x = self.frame1(x)
+        x_2 = self.frame2(x)
+        x_3 = self.frame3(x_2)
+        x_4 = self.frame4(x_3)
+        x_5 = self.frame6(x_4)
+        x_6 = self.frame7(x_5)
+        return x_6
